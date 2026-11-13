@@ -144,7 +144,7 @@ bash -n scripts/install.sh
 
 The validator checks required files, SKILL.md metadata and line count, README relative links, referenced resources, Roblox-only URLs in the official source index, and removal of the previous repository name.
 
-A GitHub Actions workflow runs these checks on pushes and pull requests to main.
+GitHub Actions also tests the real project installer in temporary directories on Linux and Windows, including the reference-file copy paths.
 
 The Luau calculator test is separate from cloud persistence. Follow [tests/README.md](tests/README.md) to place the ModuleScript and test Script in a staging place, then run it in Roblox Studio. It does not test DataStoreService, session locking, or multi-server behavior.
 

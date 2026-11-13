@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 jobs:
-  validate:
+  package-validation:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -27,3 +27,41 @@ jobs:
 
       - name: Check shell installer syntax
         run: bash -n scripts/install.sh
+
+  install-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Test project installation
+        shell: bash
+        run: |
+          export PROJECT_ROOT="$RUNNER_TEMP/roblox-skill-project"
+          mkdir -p "$PROJECT_ROOT"
+          bash scripts/install.sh all project
+          test -f "$PROJECT_ROOT/.agents/skills/roblox-offline-skill/SKILL.md"
+          test -f "$PROJECT_ROOT/.agents/skills/roblox-offline-skill/references/offline-progression.md"
+          test -f "$PROJECT_ROOT/.claude/skills/roblox-offline-skill/SKILL.md"
+
+  install-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Test project installation
+        shell: pwsh
+        run: |
+          $project = Join-Path $env:RUNNER_TEMP "roblox-skill-project"
+          New-Item -ItemType Directory -Force $project | Out-Null
+          & .\scripts\install.ps1 -Target all -Scope project -ProjectPath $project
+          if (-not (Test-Path (Join-Path $project ".agents/skills/roblox-offline-skill/SKILL.md"))) {
+            throw "Shared agent skill was not installed."
+          }
+          if (-not (Test-Path (Join-Path $project ".agents/skills/roblox-offline-skill/references/offline-progression.md"))) {
+            throw "Reference files were not copied."
+          }
+          if (-not (Test-Path (Join-Path $project ".claude/skills/roblox-offline-skill/SKILL.md"))) {
+            throw "Claude Code skill was not installed."
+          }
