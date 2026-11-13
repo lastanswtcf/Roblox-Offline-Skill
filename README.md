@@ -106,9 +106,16 @@ A web chat can use the attached prompt as conversation context. A Memory feature
 ├── examples/
 │   ├── offline-progress.luau
 │   └── profile-template.luau
-└── scripts/
-    ├── install.ps1
-    └── install.sh
+├── tests/
+│   ├── offline-progress.test.server.luau
+│   └── README.md
+├── scripts/
+│   ├── install.ps1
+│   ├── install.sh
+│   └── validate.py
+└── .github/
+    └── workflows/
+        └── validate.yml
 ~~~
 
 ## How the skill works
@@ -125,6 +132,21 @@ The AI should follow this order:
 8. Test failure paths and report exactly what was and was not executed.
 
 The core workflow and non-negotiable rules are in [SKILL.md](SKILL.md). Detailed material is loaded from **references/** only when relevant.
+
+## Validate the package and examples
+
+Run the repository checks from its root:
+
+~~~powershell
+python scripts/validate.py
+bash -n scripts/install.sh
+~~~
+
+The validator checks required files, SKILL.md metadata and line count, README relative links, referenced resources, Roblox-only URLs in the official source index, and removal of the previous repository name.
+
+A GitHub Actions workflow runs these checks on pushes and pull requests to main.
+
+The Luau calculator test is separate from cloud persistence. Follow [tests/README.md](tests/README.md) to place the ModuleScript and test Script in a staging place, then run it in Roblox Studio. It does not test DataStoreService, session locking, or multi-server behavior.
 
 ## Critical safety rules
 
